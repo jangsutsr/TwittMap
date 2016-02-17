@@ -1,0 +1,13 @@
+{
+    "mappings": {
+        "tweet": {
+            "properties": {
+                "keyword": {}, 
+                "coordinates": {},
+                "user": {},
+                "created_at": {},
+                "text": {}
+            }
+        } 
+    }
+}

@@ -5,7 +5,6 @@ desired tweets from stream and push them into the elastic search engine.
 from requests_oauthlib import OAuth1
 import requests
 from json import loads, dumps
-from re import search
 import elastic_search
 
 # Metadata including authentication info for twitter api and desired keywords.
@@ -15,20 +14,53 @@ twitt_auth = OAuth1('p32FdQyWOR7XvikqGrk1WmjD9',
                 resource_owner_secret='pWLADxamvVS5eq3IZ3VjM24ZSqUC3b7UillWMKP76CRyL')
 kws = ["music","python", "sports", "technology", "zombie", "jordan", "gravity", "amazon"]
 
+def _generate(pattern):
+    '''Table generating phase of KMP.
+    '''
+    table = [0 for i in range(len(pattern))]
+    table[0] = -1
+    pos, cnd = 2, 0
+    while pos < len(pattern):
+        if pattern[pos-1] == pattern[cnd]:
+            table[pos] = cnd + 1
+            cnd += 1; pos += 1
+        elif cnd > 0:
+            cnd = table[cnd]
+        else:
+            table[pos] = 0; pos += 1
+    return table
+
+def _search(pattern, string):
+    '''searching phase of KMP.
+    '''
+    table = _generate(pattern)
+    i = 0; j = 0
+    while i + j < len(string):
+        if pattern[j] == string[i+j]:
+            if j == len(pattern)-1: return True
+            j += 1
+        else:
+            if table[j] > -1:
+                i = i + j - table[j]; j = table[j]
+            else:
+                j = 0; i += 1
+    return False
+
 def categorize(string, table):
     '''categorize catched tweet to its supposed category(keyword).
 
-    This function is kind of awkward since it uses regular expression to
-    extract keywords. But on the other hand, it is the most secure way of
-    categorizing real-word tweets, which are structually quite complicated.
+    KMP algorithm is used here for reliable and efficient search process.
 
     Args:
         string: the text field of tweet to be checked.
         table: A set (hash table) of all keywords for lookup.
+
+    Returns:
+        The desired pattern or 'NA' shorthanding for 'Not Applicable'.
     '''
     string = string.lower()
     for pattern in table:
-        if search('.*'+pattern+'.*', string):
+        if _search(pattern, string):
             return pattern
     return 'NA'
 
@@ -73,5 +105,8 @@ if __name__ == '__main__':
                and 'text' in tweet \
                and tweet['coordinates']:
                 category = categorize(tweet['text'], table)
+                print category
+                '''
                 if category != 'NA':
                     elastic_search.insert(jsonify(tweet, category))
+                '''

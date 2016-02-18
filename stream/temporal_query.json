@@ -1,0 +1,19 @@
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "match": {"keyword": ""}
+                }, 
+                {
+                    "range": {
+                        "timestamp": {
+                            "gte": "", 
+                            "lte": "" 
+                        } 
+                    }
+                }
+            ] 
+        }
+    }
+}

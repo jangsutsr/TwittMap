@@ -18,14 +18,16 @@ def categorize(string, table):
             return pattern
     return 'NA'
 
-def jsonify(response):
-    result = {}
+def jsonify(response, category):
+    result = {'keyword': category}
     result['coordinates'] = response['coordinates']['coordinates']
     result['text'] = response['text']
     if 'created_at' in response and response['created_at']:
-        result['date'] = response['created_at']
+        result['timestamp'] = response['created_at']
+    else: result['timestamp'] = None
     if 'user' in response and response['user']:
         result['author'] = response['user']['name']
+    else: result['author'] = None
     return dumps(result)
 
 
@@ -45,4 +47,5 @@ if __name__ == '__main__':
                and tweet['coordinates']:
                 category = categorize(tweet['text'], table)
                 if category != 'NA':
-                    elastic_search.insert(category, jsonify(tweet))
+                    print(category)
+                    elastic_search.insert(jsonify(tweet, category))

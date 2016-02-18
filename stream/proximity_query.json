@@ -1,0 +1,25 @@
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "match": {"keyword": ""}
+                }, 
+                {
+                    "range": {
+                        "timestamp": {
+                            "gte": "", 
+                            "lte": "" 
+                        } 
+                    }
+                },
+                {
+                    "geo_distance": {
+                        "distance": "",
+                        "coordinates": []
+                    } 
+                }
+            ] 
+        } 
+    }
+}

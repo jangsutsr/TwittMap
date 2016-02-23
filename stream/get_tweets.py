@@ -105,8 +105,5 @@ if __name__ == '__main__':
                and 'text' in tweet \
                and tweet['coordinates']:
                 category = categorize(tweet['text'], table)
-                print category
-                '''
                 if category != 'NA':
                     elastic_search.insert(jsonify(tweet, category))
-                '''

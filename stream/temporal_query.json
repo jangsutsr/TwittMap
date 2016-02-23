@@ -1,7 +1,8 @@
 {
+    "size": 10000,
     "query": {
         "bool": {
-            "must": [
+            "filter": [
                 {
                     "match": {"keyword": ""}
                 }, 
@@ -15,5 +16,8 @@
                 }
             ] 
         }
-    }
+    },
+    "sort": [
+        {"timestamp": "asc"}     
+    ]
 }

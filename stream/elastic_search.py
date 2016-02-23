@@ -60,18 +60,19 @@ def temporal_search(keyword, start, end):
         end: end time represented by twitter-styled timestamp.
 
     Returns:
-        TO BE CONTINUED
+        Jsonized elastic search result.
+D
     '''
     path = '/'.join([host, index, mapping_type, '_search'])
-    with open('temporal_query.json') as f:
+    with open('stream/temporal_query.json') as f:
         query = json.load(f)
-    query['query']['bool']['must'][0]['match']['keyword'] = keyword
-    query['query']['bool']['must'][1]['range']['timestamp']['gte']\
+    query['query']['bool']['filter'][0]['match']['keyword'] = keyword
+    query['query']['bool']['filter'][1]['range']['timestamp']['gte']\
             = start
-    query['query']['bool']['must'][1]['range']['timestamp']['lte']\
+    query['query']['bool']['filter'][1]['range']['timestamp']['lte']\
             = end
     res = requests.get(path, data=json.dumps(query))
-    print json.dumps(json.loads(res.text), indent=2)
+    return json.loads(res.text)
 
 def proximity_search(keyword, start, end, lat, lon, distance):
     '''Fetch categorized tweet in the given time span and area.
@@ -91,26 +92,19 @@ def proximity_search(keyword, start, end, lat, lon, distance):
         distance: string measuring radius which should be in the correct format.
 
     Returns:
-        TO BE CONTINUED
+        Jsonized elastic search result.
     '''
     path = '/'.join([host, index, mapping_type, '_search'])
-    with open('proximity_query.json') as f:
+    with open('stream/proximity_query.json') as f:
         query = json.load(f)
-    query['query']['bool']['must'][0]['match']['keyword'] = keyword
-    query['query']['bool']['must'][1]['range']['timestamp']['gte']\
+    query['query']['bool']['filter'][0]['match']['keyword'] = keyword
+    query['query']['bool']['filter'][1]['range']['timestamp']['gte']\
             = start
-    query['query']['bool']['must'][1]['range']['timestamp']['lte']\
+    query['query']['bool']['filter'][1]['range']['timestamp']['lte']\
             = end
-    query['query']['bool']['must'][2]['geo_distance']['distance']\
+    query['query']['bool']['filter'][2]['geo_distance']['distance']\
             = distance
-    query['query']['bool']['must'][2]['geo_distance']['coordinates']\
+    query['query']['bool']['filter'][2]['geo_distance']['coordinates']\
             = [lat, lon]
     res = requests.get(path, data=json.dumps(query))
-    print json.dumps(json.loads(res.text), indent=2)
-
-# Test code goes here
-if __name__ == '__main__':
-    proximity_search('jordan',
-                    "Thu Feb 18 01:30:00 +0000 2016",
-                    "Thu Feb 18 02:00:00 +0000 2016",
-                    -80, 25, '1000km')
+    return json.loads(res.text)

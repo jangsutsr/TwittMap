@@ -1,5 +1,6 @@
 import requests
 import json
+import os.path
 '''
 This module provides elastic search api for other parts of
 the app to use.
@@ -8,6 +9,7 @@ the app to use.
 host = 'http://localhost:9200'
 index = 'twitter'
 mapping_type = 'tweet'
+file_path = os.path.dirname(__file__)
 
 def init_index():
     '''Initiates elastic search engine.
@@ -64,7 +66,7 @@ def temporal_search(keyword, start, end):
 D
     '''
     path = '/'.join([host, index, mapping_type, '_search'])
-    with open('stream/temporal_query.json') as f:
+    with open(os.path.join(file_path, 'temporal_query.json')) as f:
         query = json.load(f)
     query['query']['bool']['filter'][0]['match']['keyword'] = keyword
     query['query']['bool']['filter'][1]['range']['timestamp']['gte']\
@@ -95,7 +97,7 @@ def proximity_search(keyword, start, end, lat, lon, distance):
         Jsonized elastic search result.
     '''
     path = '/'.join([host, index, mapping_type, '_search'])
-    with open('stream/proximity_query.json') as f:
+    with open(os.path.join(file_path, 'proximity_query.json')) as f:
         query = json.load(f)
     query['query']['bool']['filter'][0]['match']['keyword'] = keyword
     query['query']['bool']['filter'][1]['range']['timestamp']['gte']\

@@ -5,48 +5,12 @@ import os.path
 This module provides elastic search api for other parts of
 the app to use.
 '''
-# meta data
-host = 'http://localhost:9200'
-index = 'twitter'
+
+# Meta data for elastic search
+host = 'http://40.114.93.37:9200'
+ind = 'twitter'
 mapping_type = 'tweet'
 file_path = os.path.dirname(__file__)
-
-def init_index():
-    '''Initiates elastic search engine.
-
-    This function creats index 'twitter' along with mapping type 'tweet' which
-    is defined in file 'type_config.json'. Note if ES finds a same index
-    previously exists, this function deletes the original one to prevent
-    incontinuity of timestamps.
-
-    Args: None
-
-    Returns: None
-    '''
-    path = '/'.join([host, index])
-    is_exist = requests.head(path)
-    if is_exist.status_code == 200:
-        requests.delete(path).json()
-    with open('type_config.json') as f:
-        mapping = json.dumps(json.load(f))
-    requests.put('/'.join([host, index]), data=mapping)
-
-def insert(string):
-    '''Insert tweets into twitter index.
-
-    This function takes dumped jsonized tweet and stores it into search engine.
-    It would check response to make sure the tweet is successfully stored at
-    last.
-
-    Args:
-        string: dumped jsonized tweet
-
-    Returns: None
-    '''
-    path = '/'.join([host, index, mapping_type])
-    res = requests.post(path, data=string)
-    while res.status_code != 201 or not res.json()['created']:
-        res = requests.post(path, data=string)
 
 def temporal_search(keyword, start, end):
     '''Fetch categorized tweet in the given time span.
@@ -63,9 +27,8 @@ def temporal_search(keyword, start, end):
 
     Returns:
         Jsonized elastic search result.
-D
     '''
-    path = '/'.join([host, index, mapping_type, '_search'])
+    path = '/'.join([host, ind, mapping_type, '_search'])
     with open(os.path.join(file_path, 'temporal_query.json')) as f:
         query = json.load(f)
     query['query']['bool']['filter'][0]['match']['keyword'] = keyword
@@ -96,7 +59,7 @@ def proximity_search(keyword, start, end, lat, lon, distance):
     Returns:
         Jsonized elastic search result.
     '''
-    path = '/'.join([host, index, mapping_type, '_search'])
+    path = '/'.join([host, ind, mapping_type, '_search'])
     with open(os.path.join(file_path, 'proximity_query.json')) as f:
         query = json.load(f)
     query['query']['bool']['filter'][0]['match']['keyword'] = keyword
@@ -110,3 +73,8 @@ def proximity_search(keyword, start, end, lat, lon, distance):
             = [lat, lon]
     res = requests.get(path, data=json.dumps(query))
     return json.loads(res.text)
+
+
+
+
+

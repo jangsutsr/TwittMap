@@ -12,14 +12,14 @@ var url = "/global";
  */
 xmlhttp.onreadystatechange = function() {
 	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-		alert(xmlhttp.responseText);
+		var locs = JSON.parse(xmlhttp.responseText)['tweets'];
+		var arr = heatmap.getData();
+		for (int i = 0; i < locs.length; ++i) {
+			var loc = new google.maps.LatLng(parseInt(locs[i][0]), parseInt(locs[i][1]));
+			arr.push(loc);
+		}
 	}
 };
-
-// function drawHeatMap(locs) {
-// 	for (int i = 0; i < locs.length; ++i)
-// 		arr.push(locs);
-// }
 
 function initMap() {
 

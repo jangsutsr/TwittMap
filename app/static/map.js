@@ -14,8 +14,8 @@ xmlhttp.onreadystatechange = function() {
 	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 		var locs = JSON.parse(xmlhttp.responseText)['tweets'];
 		var arr = heatmap.getData();
-		for (int i = 0; i < locs.length; ++i) {
-			var loc = new google.maps.LatLng(parseInt(locs[i][0]), parseInt(locs[i][1]));
+		for (var i = 0; i < locs.length; ++i) {
+		    var loc = new google.maps.LatLng(parseInt(locs[i][1]), parseInt(locs[i][0]));
 			arr.push(loc);
 		}
 	}

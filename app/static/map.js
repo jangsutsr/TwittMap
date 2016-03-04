@@ -52,6 +52,7 @@ function initMap() {
 	 * On click, recored the location and place a marker
 	 */
 	map.addListener('click', function(e) {
+
 		lat = e.latLng.lat().toString();
 		lng = e.latLng.lng().toString();
 		
@@ -62,16 +63,8 @@ function initMap() {
 			map: map
 		});
 		marker.setMap(map);
-  });
-
-	// loc = new google.maps.LatLng(e.latLng.lat(), e.latLng.lng());
-	// var weight = Math.floor((Math.random() * 10) + 1);
-
-	// var arr = heatmap.getData();
-
-	// for (i = 0; i < weight; i++)
-	//   	arr.push(loc);
-	// });
+		sendHttp("local");
+  	});
 }
 
 /* 
@@ -81,7 +74,6 @@ $(".dropdown").on("click", "li a", function() {
 	keyword = $(this).text();
 	$(".dropdown-toggle").html(keyword + ' <span class="caret"></span>');
 }); 
-
 
 /* 
  * Initilize two datetimepickers
@@ -93,13 +85,10 @@ $('#datetimepicker2').datetimepicker();
  * When clicking the sumbit button, send a POST request
  */
 $("button").on("click", function() {
+	sendHttp("global");
+});
 
-	/*
-	 * Clear the previous data
-	 */
-	var arr = heatmap.getData();
-	while (arr.length > 0)
-		arr.pop();
+function sendHttp(pattern) {
 
 	/*
 	 * Remind the user to pick a location and a keyword
@@ -108,13 +97,6 @@ $("button").on("click", function() {
 		alert("Please pick a keyword");
 		return;
 	}
-    
-    /*
-	if (lat == null || lng == null) {
-		alert("Please pick a location");
-		return;
-	}
-    */
 
 	/* 
 	 * Get the begin date and end date 
@@ -126,13 +108,25 @@ $("button").on("click", function() {
 		return;
 	}
 
-	/*
-	 * HTTP request sent
-	 */
-	//xmlhttp.open("POST", url + "?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate + "&lat=" + lat + "&lon=" + lng, true);
-	xmlhttp.open("POST", url + "?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate, true);
-	xmlhttp.send();
-});
+	if (pattern == "global") {
+		/*
+		 * Clear the previous data
+		 */
+		var arr = heatmap.getData();
+		while (arr.length > 0)
+			arr.pop();
+
+		/*
+		 * HTTP request sent
+		 */
+		xmlhttp.open("POST", "/global?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate, true);
+		xmlhttp.send();
+
+	} else {
+		xmlhttp.open("POST", "/local?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate + "&lat=" + lat + "&lon=" + lng, true);
+		xmlhttp.send();
+	}
+}
 
 
 

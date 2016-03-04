@@ -26,7 +26,7 @@ def get_global():
     start = convert(request.args['start'])
     end = convert(request.args['end'])
     search_res = temporal_search(keyword, start, end)
-    response = {'tweets': [], 'count': 0}
+    response = {'tweets': [], 'count': 0, 'pattern': 'global'}
     for item in search_res['hits']['hits']:
         response['tweets'].append(item['_source']['coordinates'])
         response['count'] += 1
@@ -47,11 +47,11 @@ def get_local():
     end = request.form['end']
     lat = request.form['lat']
     lon = request.form['lon']
-    distance = request.form['distance']
+    distance = '500km'
     search_res = proximity_search(keyword, start, end, float(lat), float(lon), distance)
-    response = {'tweets': [], 'count': 0}
+    response = {'tweets': [], 'count': 0, 'pattern': 'local'}
     for item in search_res['hits']['hits']:
-        response['tweets'].append(item['_source'])
+        response['tweets'].append(item['_source']['text'])
         response['count'] += 1
     return json.dumps(response, indent=2)
 

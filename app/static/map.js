@@ -5,7 +5,6 @@ var heatmap = null;
 var marker = null;
 
 var xmlhttp = new XMLHttpRequest();
-var url = "/global";
 
 /*
  * Listen to the http request 

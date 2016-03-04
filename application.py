@@ -1,18 +1,19 @@
-from app import server
-from flask import request, render_template
+from flask import Flask, request, render_template
 import json
 from stream.elastic_search import temporal_search, proximity_search
 from datetime import datetime
+
+application = Flask(__name__)
 
 def convert(original_time):
     timestamp = datetime.strptime(original_time, '%m-%d-%Y %I:%M %p')
     return timestamp.strftime('%a %b %d %H:%M:%S +0000 %Y')
 
-@server.route('/')
+@application.route('/')
 def index():
     return render_template('index.html')
 
-@server.route('/global', methods=['POST'])
+@application.route('/global', methods=['POST'])
 def get_global():
     '''View function for sending tweet points
 
@@ -32,7 +33,7 @@ def get_global():
         response['count'] += 1
     return json.dumps(response, indent=2)
 
-@server.route('/local', methods=['POST'])
+@application.route('/local', methods=['POST'])
 def get_local():
     '''View function for sending local tweets
 
@@ -55,4 +56,5 @@ def get_local():
         response['count'] += 1
     return json.dumps(response, indent=2)
 
-
+if __name__=='__main__':
+    application.run(debug=True)

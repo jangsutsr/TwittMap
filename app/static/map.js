@@ -3,6 +3,8 @@ var lat = null;
 var lng = null;
 var heatmap = null;
 var marker = null;
+var infowindow = null;
+var map = null;
 
 var xmlhttp = new XMLHttpRequest();
 
@@ -21,7 +23,12 @@ xmlhttp.onreadystatechange = function() {
 			}
 		} else {
 			var tweets = text['tweets'];
-			console.log(tweets);
+			var content = "";
+			for (var i = 0; i < tweets.length; ++i) {
+				content += ("<p>" + tweets[i] + "</p>")
+			}
+			infowindow.setContent(content);
+  			infowindow.open(map, marker);
 		}
 	}
 };
@@ -31,7 +38,7 @@ function initMap() {
 	/* 
 	 * Initilize the Google Map
 	 */
-	var map = new google.maps.Map(document.getElementById('map'), {
+	map = new google.maps.Map(document.getElementById('map'), {
 		center: {lat: 0, lng: 0},
 		zoom: 3,
 		styles: [{
@@ -70,6 +77,8 @@ function initMap() {
 		marker.setMap(map);
 		sendHttp("local");
   	});
+
+  	infowindow = new google.maps.InfoWindow();
 }
 
 /* 
@@ -128,7 +137,8 @@ function sendHttp(pattern) {
 		xmlhttp.send();
 
 	} else {
-		xmlhttp.open("POST", "/local?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate + "&lat=" + lat + "&lon=" + lng, true);
+		// xmlhttp.open("POST", "/local?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate, true);
+		xmlhttp.open("POST", "/local?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate + "&lat=" + lng + "&lon=" + lat, true);
 		xmlhttp.send();
 	}
 }

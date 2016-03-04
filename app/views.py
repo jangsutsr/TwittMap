@@ -42,11 +42,11 @@ def get_local():
     Returns:
         Dumped json file containing desired tweets.
     '''
-    keyword = request.form['kw']
-    start = convert(request.form['start'])
-    end = convert(request.form['end'])
-    lat = request.form['lat']
-    lon = request.form['lon']
+    keyword = request.args['kw']
+    start = convert(request.args['start'])
+    end = convert(request.args['end'])
+    lat = request.args['lat']
+    lon = request.args['lon']
     distance = '500km'
     search_res = proximity_search(keyword, start, end, float(lat), float(lon), distance)
     response = {'tweets': [], 'count': 0, 'pattern': 'local'}

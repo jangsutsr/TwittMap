@@ -43,8 +43,8 @@ def get_local():
         Dumped json file containing desired tweets.
     '''
     keyword = request.form['kw']
-    start = request.form['start']
-    end = request.form['end']
+    start = convert(request.form['start'])
+    end = convert(request.form['end'])
     lat = request.form['lat']
     lon = request.form['lon']
     distance = '500km'

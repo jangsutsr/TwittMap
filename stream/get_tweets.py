@@ -4,8 +4,14 @@ desired tweets from stream and push them into the elastic search engine.
 '''
 from requests_oauthlib import OAuth1
 import requests
-from json import loads, dumps
-import elastic_search
+import os.path
+import json
+
+# Meta data for elastic search
+host = 'http://40.114.93.37:9200'
+index = 'twitter'
+mapping_type = 'tweet'
+file_path = os.path.dirname(__file__)
 
 # Metadata including authentication info for twitter api and desired keywords.
 twitt_auth = OAuth1('p32FdQyWOR7XvikqGrk1WmjD9',
@@ -13,6 +19,26 @@ twitt_auth = OAuth1('p32FdQyWOR7XvikqGrk1WmjD9',
                 resource_owner_key='1646649835-hz23yaCiq16uanq3qghkG9k7SuAO2L3UkqM3IkH',
                 resource_owner_secret='pWLADxamvVS5eq3IZ3VjM24ZSqUC3b7UillWMKP76CRyL')
 kws = ["music","python", "sports", "technology", "zombie", "jordan", "gravity", "amazon"]
+
+def init_index():
+    '''Initiates elastic search engine.
+
+    This function creats index 'twitter' along with mapping type 'tweet' which
+    is defined in file 'type_config.json'. Note if ES finds a same index
+    previously exists, this function deletes the original one to prevent
+    incontinuity of timestamps.
+
+    Args: None
+
+    Returns: None
+    '''
+    path = '/'.join([host, index])
+    is_exist = requests.head(path)
+    if is_exist.status_code == 200:
+        requests.delete(path).json()
+    with open('type_config.json') as f:
+        mapping = json.dumps(json.load(f))
+    requests.put('/'.join([host, index]), data=mapping)
 
 def _generate(pattern):
     '''Table generating phase of KMP.
@@ -86,13 +112,30 @@ def jsonify(response, category):
     if 'user' in response and response['user']:
         result['author'] = response['user']['name']
     else: result['author'] = None
-    return dumps(result)
+    return json.dumps(result)
 
+def insert(string):
+    '''Insert tweets into twitter index.
+
+    This function takes dumped jsonized tweet and stores it into search engine.
+    It would check response to make sure the tweet is successfully stored at
+    last.
+
+    Args:
+        string: dumped jsonized tweet
+
+    Returns: None
+    '''
+    print(string)
+    path = '/'.join([host, index, mapping_type])
+    res = requests.post(path, data=string)
+    while res.status_code != 201 or not res.json()['created']:
+        res = requests.post(path, data=string)
 
 if __name__ == '__main__':
     # Prepossessing
     table = set(kws)
-    elastic_search.init_index()
+    #init_index()
     res = requests.get('https://stream.twitter.com/1.1/statuses/filter.json',
                     stream=True,
                     auth=twitt_auth,
@@ -100,10 +143,10 @@ if __name__ == '__main__':
     # Main fetch-n-store procedule
     for line in res.iter_lines():
         if line:
-            tweet = loads(line)
+            tweet = json.loads(line)
             if 'coordinates' in tweet \
                and 'text' in tweet \
                and tweet['coordinates']:
                 category = categorize(tweet['text'], table)
                 if category != 'NA':
-                    elastic_search.insert(jsonify(tweet, category))
+                    insert(jsonify(tweet, category))

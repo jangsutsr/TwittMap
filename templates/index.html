@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TweetMap</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css') }}" />
+    <style type="text/css">
+        html, body { 
+     		height: 100%;
+     	}
+     	#map { 
+     		height: 100%; 
+     	}
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#">TweetMap</a>
+            </div>
+
+            <ul class="nav navbar-nav">
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Keyword<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">music</a></li>
+                            <li><a href="#">python</a></li>
+                            <li><a href="#">sports</a></li>
+                            <li><a href="#">technology</a></li>
+                            <li><a href="#">zombie</a></li>
+                            <li><a href="#">jordan</a></li>
+                            <li><a href="#">gravity</a></li>
+                            <li><a href="#">amazon</a></li>
+                        </ul>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <div class='input-group date' id='datetimepicker1'>
+                        <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                    </div>
+                </div>
+                <span>to</span>
+                <div class="form-group">
+                    <div class='input-group date' id='datetimepicker2'>
+                        <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                    </div>
+                </div>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <button type="button" class="btn btn-default navbar-btn">Search</button>
+            </ul>
+        </div>
+    </nav>
+
+	<div id="map"></div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bower_components/moment/min/moment.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgviOH3VaP0rQc5c5VxLSUBRm7obCmi9o
+        &libraries=visualization&callback=initMap">    
+    </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='map.js') }}"> </script>
+
+</body>
+</html>

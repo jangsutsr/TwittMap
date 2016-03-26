@@ -3,7 +3,7 @@
 <head>
 	<title>TweetMap</title>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <script type="text/css" src="bootstrap-datepicker.min.css"></script>
+    <script type="text/css" src="static/bootstrap-datepicker.min.css"></script>
     <style type="text/css">
      	html, body { 
      		height: 100%;
@@ -26,7 +26,7 @@
                 <li class="dropdown active">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">keyword1</a></li>
+                            <li><a href="#">music</a></li>
                             <li><a href="#">keyword2</a></li>
                             <li><a href="#">keyword3</a></li>
                             <li role="separator" class="divider"></li>
@@ -52,11 +52,11 @@
 
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="bootstrap-datepicker.min.js"> </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap-datepicker.min.js') }}"> </script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgviOH3VaP0rQc5c5VxLSUBRm7obCmi9o
         &libraries=visualization&callback=initMap">    
     </script>
-    <script type="text/javascript" src="map.js"> </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='map.js') }}"> </script>
 </body>
 </html>

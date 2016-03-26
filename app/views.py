@@ -1,11 +1,16 @@
 from app import server
-from flask import request
+from flask import request, render_template
 from stream.elastic_search import temporal_search, proximity_search
 import json
+from datetime import datetime
+
+def convert(original_time):
+    timestamp = datetime.strptime(original_time, '%m-%d-%Y')
+    return timestamp.strftime('%a %b %d %H:%M:%S +0000 %Y')
 
 @server.route('/')
 def index():
-    pass
+    return render_template('index.html')
 
 @server.route('/global', methods=['POST'])
 def get_global():
@@ -17,9 +22,9 @@ def get_global():
     Returns:
         Dumped json file containing desired twitter points.
     '''
-    keyword = request.form['kw']
-    start = request.form['start']
-    end = request.form['end']
+    keyword = request.args['kw']
+    start = convert(request.args['start'])
+    end = convert(request.args['end'])
     search_res = temporal_search(keyword, start, end)
     response = {'tweets': [], 'count': 0}
     for item in search_res['hits']['hits']:

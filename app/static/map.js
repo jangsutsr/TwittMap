@@ -33,7 +33,7 @@ function initMap() {
 var keyword = null;
 
 var xmlhttp = new XMLHttpRequest();
-var url = "http://127.0.0.1:5000/user/";
+var url = "/global";
 xmlhttp.onreadystatechange = function() {
 	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 		if (keyword == null)
@@ -54,7 +54,7 @@ $('#dateselector2').datepicker("clearDates");
 $("button").on("click", function() {
 	var beginDate = document.getElementById("dateselector1").value.split("/").join("-");
 	var endDate = document.getElementById("dateselector2").value.split("/").join("-");
-	xmlhttp.open("POST", url + "keyword=" + keyword + "&beginDate=" + beginDate + "&endDate=" + endDate, true);
+	xmlhttp.open("POST", url + "?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate, true);
 	xmlhttp.send();
 });
 

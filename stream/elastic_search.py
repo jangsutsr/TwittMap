@@ -9,7 +9,9 @@ the app to use.
 # Meta data for elastic search
 host = 'http://40.114.93.37:9200'
 ind = 'twitter'
+#ind = 'twitter_again'
 mapping_type = 'tweet'
+#mapping_type = 'tweet_sentiment'
 file_path = os.path.dirname(__file__)
 
 def temporal_search(keyword, start, end):

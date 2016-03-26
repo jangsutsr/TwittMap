@@ -52,7 +52,7 @@ def get_local():
     search_res = proximity_search(keyword, start, end, float(lat), float(lon), distance)
     response = {'tweets': [], 'count': 0, 'pattern': 'local'}
     for item in search_res['hits']['hits']:
-        response['tweets'].append("@" + item['_source']['author'] + ": " +item['_source']['text'])
+        response['tweets'].append("@"+item['_source']['author']+": "+item['_source']['text']+" Sentiment: "+item['_source'].get('sentiment', 'N/A'))
         response['count'] += 1
     return json.dumps(response, indent=2)
 

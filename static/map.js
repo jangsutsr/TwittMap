@@ -1,53 +1,34 @@
 var keyword = null;
-var markers = [];
+var lat = null;
+var lng = null;
+var heatmap = null;
+var marker = null;
+var infowindow = null;
 var map = null;
+
 var xmlhttp = new XMLHttpRequest();
-
-var bludMarker = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
-var redMarker = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-var yellowMarker = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-
-
-function attachMessage(marker, meg) {
-	var infowindow = new google.maps.InfoWindow({
-		content: meg
-	});
-
-	marker.addListener('click', function() {
-		infowindow.open(map, marker);
-	});
-}
 
 /*
  * Listen to the http request 
  */
 xmlhttp.onreadystatechange = function() {
 	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-		// clear the existing markers
-		while (markers.length != 0)
-			markers.pop().setMap(null);
-		// add new markers
-		var tweets = JSON.parse(xmlhttp.responseText)['tweets']; 
-		for (var i = 0; i < tweets.length; ++i) {
-			var tweet = tweets[i];
-			var loc = new google.maps.LatLng(parseInt(tweet["coordinates"][1]), parseInt(tweet["coordinates"][0]));
-			var icon = null;
-			if (tweet['sen'] == 'positive')
-				icon = redMarker;
-			else if (tweet['sen'] == 'negative')
-				icon = yellowMarker;
-			else
-				icon = bludMarker;
-			var text = tweet['text'];
-			var marker = new google.maps.Marker({
-				icon: icon,
-				position: loc,
-				map: map,
-				title: text
-			});
-			marker.setMap(map);
-			markers.push(marker);
-			attachMessage(marker, text);
+		var text = JSON.parse(xmlhttp.responseText); 
+		if (text['pattern'] == "global") {
+			var locs = text['tweets'];
+			var arr = heatmap.getData();
+			for (var i = 0; i < locs.length; ++i) {
+			    var loc = new google.maps.LatLng(parseInt(locs[i][1]), parseInt(locs[i][0]));
+				arr.push(loc);
+			}
+		} else {
+			var tweets = text['tweets'];
+			var content = "";
+			for (var i = 0; i < tweets.length; ++i) {
+				content += ("<p>" + tweets[i] + "</p>")
+			}
+			infowindow.setContent(content);
+  			infowindow.open(map, marker);
 		}
 	}
 };
@@ -69,6 +50,35 @@ function initMap() {
 		}],
 		disableDoubleClickZoom: true
 	});
+
+	/* 
+	 * Initilize the HeatMap
+	 */
+	heatmap = new google.maps.visualization.HeatmapLayer({
+		data: [],
+		map: map,
+		radius: 18
+	});
+
+	/* 
+	 * On click, recored the location and place a marker
+	 */
+	map.addListener('click', function(e) {
+
+		lat = e.latLng.lat().toString();
+		lng = e.latLng.lng().toString();
+		
+		if (marker != null)
+			marker.setMap(null);
+		marker = new google.maps.Marker({
+			position: e.latLng,
+			map: map
+		});
+		marker.setMap(map);
+		sendHttp("local");
+  	});
+
+  	infowindow = new google.maps.InfoWindow();
 }
 
 /* 
@@ -89,10 +99,10 @@ $('#datetimepicker2').datetimepicker();
  * When clicking the sumbit button, send a POST request
  */
 $("button").on("click", function() {
-	sendHttp();
+	sendHttp("global");
 });
 
-function sendHttp() {
+function sendHttp(pattern) {
 
 	/*
 	 * Remind the user to pick a location and a keyword
@@ -112,11 +122,25 @@ function sendHttp() {
 		return;
 	}
 
-	/*
-	 * HTTP request sent
-	 */
-	xmlhttp.open("POST", "/global?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate, true);
-	xmlhttp.send();
+	if (pattern == "global") {
+		/*
+		 * Clear the previous data
+		 */
+		var arr = heatmap.getData();
+		while (arr.length > 0)
+			arr.pop();
+
+		/*
+		 * HTTP request sent
+		 */
+		xmlhttp.open("POST", "/global?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate, true);
+		xmlhttp.send();
+
+	} else {
+		// xmlhttp.open("POST", "/local?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate, true);
+		xmlhttp.open("POST", "/local?kw=" + keyword + "&start=" + beginDate + "&end=" + endDate + "&lat=" + lng + "&lon=" + lat, true);
+		xmlhttp.send();
+	}
 }
 
 
